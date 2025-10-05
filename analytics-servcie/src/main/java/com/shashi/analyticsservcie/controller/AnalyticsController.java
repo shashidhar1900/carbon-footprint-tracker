@@ -51,5 +51,10 @@ public class AnalyticsController {
         return ResponseEntity.ok("Auth says: " + authClient.debug());
     }
 
+    @GetMapping("/monthly")
+    public ResponseEntity<?> getAnalyticsMonthly() {
+        return analyticsService.getAnalyticsMonthly();
+    }
+
 }
 

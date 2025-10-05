@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface FoodRepository extends JpaRepository<FoodUsage, Integer> {
     List<FoodUsage> findByUsername(String username);
+
+    FoodUsage findByUsernameAndDateAndType(String username, String string, String type);
 }

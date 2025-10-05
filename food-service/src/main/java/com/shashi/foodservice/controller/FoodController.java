@@ -22,6 +22,16 @@ public class FoodController {
         return foodService.addFood(request);
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<?> updateFood(@RequestBody FoodRequest request) {
+        return foodService.updateFood(request);
+    }
+
+    @DeleteMapping("delete/{type}")
+    public ResponseEntity<?> deleteFood(@PathVariable String type) {
+        return foodService.deleteFood(type);
+    }
+
     @GetMapping("/history")
     public ResponseEntity<List<FoodUsage>> getHistory() {
         return foodService.getHistory();

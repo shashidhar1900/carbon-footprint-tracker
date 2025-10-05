@@ -27,6 +27,11 @@ public class FoodService {
 
     public ResponseEntity<?> addFood(FoodRequest request) {
         String username = getCurrentUsername();
+        String type = request.getType();
+
+        if(foodRepository.findByUsernameAndDateAndType(username, LocalDate.now().toString(), type) != null) {
+            return ResponseEntity.badRequest().body("Food record for today already exists with that type. Please update it instead!!.");
+        }
 
         FoodUsage usage = FoodUsage.builder()
                 .username(username)
@@ -72,5 +77,36 @@ public class FoodService {
                 })
                 .sum();
         return ResponseEntity.ok(new FoodResponse(username, year, month, totalEmission));
+    }
+
+    public ResponseEntity<?> updateFood(FoodRequest request) {
+        String username = getCurrentUsername();
+        String type = request.getType();
+
+        FoodUsage existingUsage = foodRepository.findByUsernameAndDateAndType(username, LocalDate.now().toString(), type);
+        if (existingUsage != null) {
+            foodRepository.delete(existingUsage);
+            FoodUsage newUsage = FoodUsage.builder()
+                    .username(username)
+                    .type(request.getType())
+                    .quantity(request.getQuantity())
+                    .date(LocalDate.now().toString())
+                    .build();
+            foodRepository.save(newUsage);
+            return ResponseEntity.ok("Food record updated!");
+        } else {
+            return ResponseEntity.badRequest().body("No food record found for today to update.");
+        }
+    }
+
+    public ResponseEntity<?> deleteFood(String type) {
+        String username = getCurrentUsername();
+        FoodUsage existingUsage = foodRepository.findByUsernameAndDateAndType(username, LocalDate.now().toString(),type);
+        if (existingUsage != null) {
+            foodRepository.delete(existingUsage);
+            return ResponseEntity.ok("Today's Food record deleted!");
+        } else {
+            return ResponseEntity.badRequest().body("No food record found for today to delete.");
+        }
     }
 }

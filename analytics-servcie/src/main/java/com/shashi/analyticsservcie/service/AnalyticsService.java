@@ -1,5 +1,6 @@
 package com.shashi.analyticsservcie.service;
 
+import com.shashi.analyticsservcie.dto.AnalyticsResponse;
 import com.shashi.analyticsservcie.dto.EnergyResponse;
 import com.shashi.analyticsservcie.dto.FoodResponse;
 import com.shashi.analyticsservcie.dto.TransportResponse;
@@ -16,6 +17,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,5 +127,17 @@ public class AnalyticsService {
         }
         userMonthlyEnergyEmissionRepository.saveAll(emissions);
         return ResponseEntity.ok(emissions);
+    }
+
+    public ResponseEntity<?> getAnalyticsMonthly() {
+
+        LocalDate now = LocalDate.now();
+        List<UserMonthlyTotalEmission> totalEmissions = getMonthlyTotalEmission(now.getYear(), now.getMonthValue()).getBody();
+        List<AnalyticsResponse> responses = totalEmissions.stream()
+                .map(e -> new AnalyticsResponse(e.getUsername(), e.getTotalEmission()))
+                .toList();
+
+        return ResponseEntity.ok(responses);
+
     }
 }
