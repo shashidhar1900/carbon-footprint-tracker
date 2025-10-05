@@ -10,4 +10,6 @@ import java.util.List;
 public interface EnergyRepository extends JpaRepository<EnergyUsage,Integer> {
 
     List<EnergyUsage> findByUsername(String username);
+
+    EnergyUsage findByUsernameAndDate(String username, String string);
 }

@@ -20,6 +20,16 @@ public class EnergyController {
         return energyService.addEnergy(energyRequest);
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<?> updateEnergy(@RequestBody EnergyRequest energyRequest) {
+        return energyService.updateEnergy(energyRequest);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteEnergy() {
+        return energyService.deleteEnergy();
+    }
+
     @GetMapping("/history")
     public ResponseEntity<?> getEnergyHistory() {
         return energyService.getEnergyHistory();

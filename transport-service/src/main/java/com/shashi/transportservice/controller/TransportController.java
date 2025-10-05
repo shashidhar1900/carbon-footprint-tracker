@@ -6,7 +6,6 @@ import com.shashi.transportservice.dto.TransportRequest;
 import com.shashi.transportservice.dto.TransportResponse;
 import com.shashi.transportservice.model.TransportUsage;
 import com.shashi.transportservice.service.TransportService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +22,16 @@ public class TransportController {
     @PostMapping("/add")
     public ResponseEntity<?> addTransport(@RequestBody TransportRequest transport) {
         return transportService.addTransport(transport);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateTransport(@RequestBody TransportRequest transport) {
+        return transportService.updateTransport(transport);
+    }
+
+    @DeleteMapping("delete/{mode}")
+    public ResponseEntity<?> deleteTransport(@PathVariable String mode) {
+        return transportService.deleteTransport(mode);
     }
 
     @GetMapping("/history")

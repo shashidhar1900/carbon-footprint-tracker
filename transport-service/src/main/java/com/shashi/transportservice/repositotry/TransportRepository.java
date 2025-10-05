@@ -17,4 +17,5 @@ public interface TransportRepository extends JpaRepository<TransportUsage, Integ
     @Query("SELECT DISTINCT t.username FROM TransportUsage t")
     List<String> findDistinctUsernames();
 
+    TransportUsage findByUsernameAndDateAndMode(String username, String today, String mode);
 }

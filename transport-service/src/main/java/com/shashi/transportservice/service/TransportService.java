@@ -27,7 +27,37 @@ public class TransportService {
 
     public ResponseEntity<?> addTransport(TransportRequest transport) {
         String username = getCurrentUsername();
+        String today = LocalDate.now().toString();
+        String mode = transport.getMode();
 
+        // Check if a record already exists for today with that mode
+        TransportUsage existing = transportRepository.findByUsernameAndDateAndMode(username, today, mode);
+        if (existing != null) {
+            return ResponseEntity.badRequest().body("Transport already added for today with that mode. You can update or edit if you want.");
+        }
+
+        TransportUsage usage = TransportUsage.builder()
+                .username(username)
+                .mode(transport.getMode())
+                .distance(transport.getDistance())
+                .date(today)
+                .build();
+
+        transportRepository.save(usage);
+        return ResponseEntity.ok("Transport record added!");
+    }
+
+    public ResponseEntity<?> updateTransport(TransportRequest transport) {
+        String username = getCurrentUsername();
+        String today = LocalDate.now().toString();
+        String mode = transport.getMode();
+        TransportUsage existing = transportRepository.findByUsernameAndDateAndMode(username, today, mode);
+        if (existing == null) {
+            return ResponseEntity.badRequest().body("No transport record found for today to update. Please add one first.");
+        }
+        // Delete the old record
+        transportRepository.delete(existing);
+        // Add the new record
         TransportUsage usage = TransportUsage.builder()
                 .username(username)
                 .mode(transport.getMode())
@@ -36,7 +66,7 @@ public class TransportService {
                 .build();
 
         transportRepository.save(usage);
-        return ResponseEntity.ok("Transport record added!");
+        return ResponseEntity.ok("Transport record updated!");
     }
 
     public ResponseEntity<List<TransportUsage>> getHistory() {
@@ -83,5 +113,17 @@ public class TransportService {
                 .map(username -> getMonthlyTransport(username, year, month).getBody())
                 .toList();
         return ResponseEntity.ok(responses);
+    }
+
+
+    public ResponseEntity<?> deleteTransport(String mode) {
+        String username = getCurrentUsername();
+        String today = LocalDate.now().toString();
+        TransportUsage existing = transportRepository.findByUsernameAndDateAndMode(username, today, mode);
+        if (existing == null) {
+            return ResponseEntity.badRequest().body("No transport record found for today to delete.");
+        }
+        transportRepository.delete(existing);
+        return ResponseEntity.ok("Today's transport record deleted successfully.");
     }
 }

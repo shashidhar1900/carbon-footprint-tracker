@@ -59,4 +59,29 @@ public class EnergyService {
         return ResponseEntity.ok(new EnergyResponse(username, year, month, totalEmission));
 
     }
+
+    public ResponseEntity<?> updateEnergy(EnergyRequest energyRequest) {
+        String username = getCurrentUsername();
+
+        EnergyUsage existingUsage = energyRepository.findByUsernameAndDate(username, LocalDate.now().toString());
+        if (existingUsage == null) {
+            return ResponseEntity.badRequest().body("No energy record found for today. Please add one first.");
+        }
+
+        existingUsage.setUnits(energyRequest.getUnits());
+        energyRepository.save(existingUsage);
+        return ResponseEntity.ok("Energy record updated!");
+    }
+
+    public ResponseEntity<?> deleteEnergy() {
+        String username = getCurrentUsername();
+
+        EnergyUsage existingUsage = energyRepository.findByUsernameAndDate(username, LocalDate.now().toString());
+        if (existingUsage == null) {
+            return ResponseEntity.badRequest().body("No energy record found for today.");
+        }
+
+        energyRepository.delete(existingUsage);
+        return ResponseEntity.ok("Energy record deleted!");
+    }
 }
