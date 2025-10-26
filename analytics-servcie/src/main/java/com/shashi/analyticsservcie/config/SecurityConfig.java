@@ -24,6 +24,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/api/analytics/**").authenticated() // protect analytics endpoints
                         .anyRequest().permitAll() // allow others (like health checks, swagger if needed)
                 )
