@@ -33,7 +33,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
+            String token = authHeader.substring(7).trim();
             try {
                 String username = jwtUtil.extractUsername(token);
 
@@ -49,6 +49,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }

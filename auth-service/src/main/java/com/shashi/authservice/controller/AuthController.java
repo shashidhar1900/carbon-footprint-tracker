@@ -32,9 +32,4 @@ public class AuthController {
         return authService.getAllUsernames();
     }
 
-    @GetMapping("/debug")
-    public ResponseEntity<String> debug(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        return ResponseEntity.ok("Auth header at Auth = " + authHeader);
-    }
 }
