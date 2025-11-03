@@ -1,0 +1,168 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Shashi@123
+      MYSQL_DATABASE: carbon_tracker
+    ports:
+      - "3307:3306"
+    networks:
+      - carbon-net
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  service-registry:
+    build:
+      context: ./service-registry
+      dockerfile: Dockerfile
+    container_name: service-registry
+    ports:
+      - "8761:8761"
+    networks:
+      - carbon-net
+    depends_on:
+      - mysql
+    environment:
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=false
+      - EUREKA_CLIENT_FETCH_REGISTRY=false
+      - EUREKA_INSTANCE_HOSTNAME=service-registry
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8961:8961"
+    networks:
+      - carbon-net
+    depends_on:
+      - service-registry
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_HOSTNAME=api-gateway
+
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    ports:
+      - "8861:8861"
+    networks:
+      - carbon-net
+    depends_on:
+      - service-registry
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/carbon_tracker?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Shashi@123
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_HOSTNAME=auth-service
+
+  transport-service:
+    build:
+      context: ./transport-service
+      dockerfile: Dockerfile
+    container_name: transport-service
+    ports:
+      - "8080:8080"
+    networks:
+      - carbon-net
+    depends_on:
+      - service-registry
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/carbon_tracker?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Shashi@123
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_HOSTNAME=transport-service
+
+  energy-service:
+    build:
+      context: ./energy-service
+      dockerfile: Dockerfile
+    container_name: energy-service
+    ports:
+      - "8081:8081"
+    networks:
+      - carbon-net
+    depends_on:
+      - service-registry
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/carbon_tracker?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Shashi@123
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_HOSTNAME=energy-service
+
+  food-service:
+    build:
+      context: ./food-service
+      dockerfile: Dockerfile
+    container_name: food-service
+    ports:
+      - "8082:8082"
+    networks:
+      - carbon-net
+    depends_on:
+      - service-registry
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/carbon_tracker?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Shashi@123
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_HOSTNAME=food-service
+
+  analytics-service:
+    build:
+      context: ./analytics-service
+      dockerfile: Dockerfile
+    container_name: analytics-service
+    ports:
+      - "8083:8083"
+    networks:
+      - carbon-net
+    depends_on:
+      - service-registry
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/carbon_tracker?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Shashi@123
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_HOSTNAME=analytics-service
+
+  leaderboard-service:
+    build:
+      context: ./leaderboard-service
+      dockerfile: Dockerfile
+    container_name: leaderboard-service
+    ports:
+      - "8084:8084"
+    networks:
+      - carbon-net
+    depends_on:
+      - service-registry
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/carbon_tracker?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Shashi@123
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_HOSTNAME=leaderboard-service
+
+networks:
+  carbon-net:
+    driver: bridge
+
+volumes:
+  mysql_data:
