@@ -23,33 +23,63 @@ public class AuthService {
 
     public ResponseEntity<String> register(RegisterRequest registerRequest) {
 
-        if(userRepository.existsByUsername(registerRequest.getUsername())) {
+        if (userRepository.existsByUsername(registerRequest.getUsername())) {
             return ResponseEntity.badRequest().body("Username is already taken!");
         }
 
-        if(userRepository.existsByEmail(registerRequest.getEmail())) {
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
             return ResponseEntity.badRequest().body("Email is already in use!");
+        }
+
+        String email = registerRequest.getEmail();
+        if (!isValidEmail(email)) {
+            return ResponseEntity.badRequest().body("Email format is invalid");
+        }
+
+        String password = registerRequest.getPassword();
+        if (!isStrongPassword(password)) {
+            return ResponseEntity.badRequest().body("Password must be at least 8 characters and include uppercase, lowercase, digit and special character.");
         }
 
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setEmail(registerRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setPassword(passwordEncoder.encode(password));
         user.setRole("USER");
         userRepository.save(user);
         return ResponseEntity.ok("User registered successfully");
-
     }
 
-    public ResponseEntity<AuthResponse> login(LoginRequest loginRequest) {
-        User user = userRepository.findByUsername(loginRequest.getUsername()).get();
-        if (user == null || !passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(401).body(null);
+    private boolean isValidEmail(String email) {
+        if (email == null) {
+            return false;
+        }
+        String trimmed = email.trim();
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        return java.util.regex.Pattern.compile(emailRegex).matcher(trimmed).matches();
+    }
+
+    private boolean isStrongPassword(String password) {
+        if (password == null || password.length() < 8) {
+            return false;
+        }
+        boolean hasUpper = java.util.regex.Pattern.compile("[A-Z]").matcher(password).find();
+        boolean hasLower = java.util.regex.Pattern.compile("[a-z]").matcher(password).find();
+        boolean hasDigit = java.util.regex.Pattern.compile("\\d").matcher(password).find();
+        boolean hasSpecial = java.util.regex.Pattern.compile("[^A-Za-z0-9]").matcher(password).find();
+        return hasUpper && hasLower && hasDigit && hasSpecial;
+    }
+
+    public ResponseEntity<?> login(LoginRequest loginRequest) {
+        User user = userRepository.findByUsername(loginRequest.getUsername()).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(401).body("User does not exist");
+        }
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(401).body("Invalid credentials");
         }
 
-
         String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
-
         AuthResponse authResponse = new AuthResponse(token, user.getUsername(), user.getRole());
         return ResponseEntity.ok(authResponse);
     }
