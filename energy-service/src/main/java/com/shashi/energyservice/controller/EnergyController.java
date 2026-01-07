@@ -37,6 +37,6 @@ public class EnergyController {
 
     @GetMapping("/history/{username}/{year}/{month}")
     public ResponseEntity<EnergyResponse> getMonthlyEnergy(@PathVariable String username, @PathVariable int year, @PathVariable int month) {
-        return energyService.getMonthyEnergy(username,year,month);
+        return energyService.getMonthlyEnergy(username,year,month);
     }
 }

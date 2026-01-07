@@ -1,0 +1,12 @@
+package com.shashi.analyticsservice.dto;
+
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class AnalyticsResponse {
+    String username;
+    double totalEmission;
+}

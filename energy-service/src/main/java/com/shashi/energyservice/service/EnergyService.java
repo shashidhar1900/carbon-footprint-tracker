@@ -46,7 +46,7 @@ public class EnergyService {
 
     }
 
-    public ResponseEntity<EnergyResponse> getMonthyEnergy(String username, int year, int month) {
+    public ResponseEntity<EnergyResponse> getMonthlyEnergy(String username, int year, int month) {
 
         List<EnergyUsage> usages = energyRepository.findByUsername(username);
         double totalEmission = usages.stream()
