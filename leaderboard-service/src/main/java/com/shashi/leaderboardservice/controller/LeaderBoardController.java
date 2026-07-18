@@ -20,7 +20,12 @@ public class LeaderBoardController {
     private final LeaderBoardService leaderBoardService;
 
     @GetMapping("monthly/top/{top}")
-    public ResponseEntity<List<LeaderBoard>> getGlobalLeaderboard(@PathVariable int top) {
+    public ResponseEntity<List<LeaderBoard>> getGlobalTopLeaderboard(@PathVariable int top) {
         return leaderBoardService.getTopPerformers(top);
+    }
+
+    @GetMapping("monthly/last/{last}")
+    public ResponseEntity<List<LeaderBoard>> getGlobalLastLeaderboard(@PathVariable int last) {
+        return leaderBoardService.getLastPerformers(last);
     }
 }

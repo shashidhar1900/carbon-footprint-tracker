@@ -73,6 +73,8 @@ public class AnalyticsService {
             emissions.add(userEmission);
         }
 
+        userMonthlyEmissionRepository.saveAllAndFlush(emissions);
+
 
         return ResponseEntity.ok(emissions);
     }

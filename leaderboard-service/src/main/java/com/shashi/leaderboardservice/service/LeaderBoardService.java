@@ -29,4 +29,17 @@ public class LeaderBoardService {
         return ResponseEntity.ok(leaderBoards);
 
     }
+
+    public ResponseEntity<List<LeaderBoard>> getLastPerformers(int last) {
+
+        List<AnalyticsResponse> response = analyticsClient.getAnalyticsMonthly();
+        List<LeaderBoard> leaderBoards = response.stream()
+                .map(r -> new LeaderBoard(r.getUsername(), r.getTotalEmission()))
+                .sorted((a, b) -> Double.compare(b.getTotalEmission(), a.getTotalEmission()))
+                .limit(last)
+                .toList();
+
+        return ResponseEntity.ok(leaderBoards);
+
+    }
 }
