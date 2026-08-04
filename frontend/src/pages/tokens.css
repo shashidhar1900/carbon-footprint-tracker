@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+:root {
+  --canopy: #0f3d2e;
+  --fern: #2f9e64;
+  --fern-dark: #24824f;
+  --moss: #86a98f;
+  --bark: #241c15;
+  --parchment: #f6f3ea;
+  --parchment-deep: #efe9d8;
+  --ember: #e8a33d;
+  --clay: #c1543a;
+  --app-max-width: 880px;
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background: var(--parchment);
+}
