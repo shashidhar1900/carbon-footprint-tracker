@@ -119,6 +119,12 @@ export function EnergyPage() {
 
   return (
     <main className="service-page">
+      <div className="page-bg" aria-hidden="true">
+        <div className="bg-pattern bg-pattern-energy" />
+        <div className="bg-blob bg-blob-1" />
+        <div className="bg-blob bg-blob-2" />
+      </div>
+
       <button type="button" className="back-link" onClick={() => navigate('/dashboard')}>
         ← Dashboard
       </button>

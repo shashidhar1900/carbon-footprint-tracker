@@ -14,11 +14,54 @@
   --font-display: 'Fraunces', serif;
   --font-body: 'Inter', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
+  /* Overrides index.css's :root background (var(--bg)) — same selector,
+     later in source order, so this wins the cascade without needing !important. */
+  background: var(--parchment);
 }
 
-html,
 body,
 #root {
   min-height: 100%;
-  background: var(--parchment);
+  /* Deliberately no background here — #root doesn't establish its own
+     stacking context, so an opaque background on it would paint on top
+     of .page-bg (which resolves to the root stacking context) and hide
+     it completely. Leave these transparent so html's background and
+     .page-bg show through underneath the actual page content. */
+}
+
+.page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat;
+}
+
+.bg-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+}
+
+.bg-blob-1 {
+  width: 460px;
+  height: 460px;
+  top: -100px;
+  left: -80px;
+  background: radial-gradient(circle, var(--fern) 0%, transparent 70%);
+}
+
+.bg-blob-2 {
+  width: 420px;
+  height: 420px;
+  bottom: -120px;
+  right: -60px;
+  background: radial-gradient(circle, var(--ember) 0%, transparent 70%);
 }

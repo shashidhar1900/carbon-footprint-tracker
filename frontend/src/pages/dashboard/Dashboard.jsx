@@ -65,6 +65,12 @@ export function Dashboard() {
 
   return (
     <main className="dashboard-page">
+      <div className="page-bg" aria-hidden="true">
+        <div className="bg-pattern bg-pattern-dashboard" />
+        <div className="bg-blob bg-blob-1" />
+        <div className="bg-blob bg-blob-2" />
+      </div>
+
       <div className="dashboard-header">
         <div>
           <h1>Welcome back, {username}</h1>

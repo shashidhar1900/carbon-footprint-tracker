@@ -8,6 +8,45 @@
   position: relative;
   font-family: var(--font-body);
   color: var(--bark);
+  overflow: hidden;
+}
+
+.home-page-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M32 12c8 4 12 12 8 22-4 8-14 10-20 4-6-6-4-16 4-22 3-2 5-3 8-4Z' fill='%232f9e64' fill-opacity='0.06'/%3E%3Ccircle cx='10' cy='48' r='2.5' fill='%23e8a33d' fill-opacity='0.08'/%3E%3Ccircle cx='52' cy='8' r='2' fill='%2386a98f' fill-opacity='0.08'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+.bg-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.35;
+}
+
+.bg-blob-1 {
+  width: 420px;
+  height: 420px;
+  top: -120px;
+  left: -100px;
+  background: radial-gradient(circle, var(--fern) 0%, transparent 70%);
+}
+
+.bg-blob-2 {
+  width: 380px;
+  height: 380px;
+  bottom: -140px;
+  right: -80px;
+  background: radial-gradient(circle, var(--ember) 0%, transparent 70%);
 }
 
 .home-page.blurred .auth-card {
@@ -15,6 +54,8 @@
 }
 
 .auth-card {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 400px;
   padding: 36px 32px;
@@ -62,6 +103,41 @@
 .auth-form input:focus {
   outline: 2px solid var(--fern);
   outline-offset: 1px;
+}
+
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 42px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: rgba(36, 28, 21, 0.45);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle svg {
+  width: 19px;
+  height: 19px;
+}
+
+.password-toggle:hover {
+  color: var(--fern-dark);
 }
 
 .auth-actions {
