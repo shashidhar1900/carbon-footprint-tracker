@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Jenkins credential of type "Username with password" — add this
         // in Jenkins UI: Manage Jenkins > Credentials, id must match exactly.
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
+        DOCKERHUB_CREDENTIALS = credentials('shashi1900')
         DOCKERHUB_NAMESPACE   = 'shashi1900' // change to your actual Docker Hub username
         IMAGE_TAG             = "${env.BUILD_NUMBER}"
     }
@@ -62,7 +62,7 @@ pipeline {
                     """
 
                     allServices.each { svc ->
-                        def image = "${DOCKERHUB_NAMESPACE}/carbontrail-${svc}"
+                        def image = "${DOCKERHUB_NAMESPACE}/carbon-footprint-tracker-${svc}"
                         sh """
                             docker build -t ${image}:${IMAGE_TAG} -t ${image}:latest ./${svc}
                             docker push ${image}:${IMAGE_TAG}
