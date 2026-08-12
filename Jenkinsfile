@@ -30,25 +30,22 @@ pipeline {
                         'leaderboard-service'
                     ]
 
-                    def parallelStages = [:]
-
+                    // Build backend services sequentially
                     backendServices.each { svc ->
-
-                        parallelStages["Build ${svc}"] = {
+                        stage("Build ${svc}") {
                             dir("backend/${svc}") {
                                 sh 'mvn -B clean package'
                             }
                         }
                     }
 
-                    parallelStages['Build frontend'] = {
+                    // Build frontend
+                    stage('Build frontend') {
                         dir('frontend') {
                             sh 'npm ci'
                             sh 'npm run build'
                         }
                     }
-
-                    parallel parallelStages
                 }
             }
         }

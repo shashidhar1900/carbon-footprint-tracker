@@ -19,7 +19,7 @@ services:
     build:
       context: ./backend/service-registry
       dockerfile: Dockerfile
-      image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-service-registry:${IMAGE_TAG:-latest}
+    image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-service-registry:${IMAGE_TAG:-latest}
     container_name: service-registry
     ports:
       - "8761:8761"
@@ -36,7 +36,7 @@ services:
     build:
       context: ./backend/api-gateway
       dockerfile: Dockerfile
-      image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-api-gateway:${IMAGE_TAG:-latest}
+    image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-api-gateway:${IMAGE_TAG:-latest}
     container_name: api-gateway
     ports:
       - "8961:8961"
@@ -53,7 +53,7 @@ services:
     build:
       context: ./backend/auth-service
       dockerfile: Dockerfile
-      image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-auth-service:${IMAGE_TAG:-latest}
+    image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-auth-service:${IMAGE_TAG:-latest}
     container_name: auth-service
     ports:
       - "8861:8861"
@@ -73,7 +73,7 @@ services:
     build:
       context: ./backend/transport-service
       dockerfile: Dockerfile
-      image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-transport-service:${IMAGE_TAG:-latest}
+    image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-transport-service:${IMAGE_TAG:-latest}
     container_name: transport-service
     ports:
       - "8080:8080"
@@ -93,7 +93,7 @@ services:
     build:
       context: ./backend/energy-service
       dockerfile: Dockerfile
-      image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-energy-service:${IMAGE_TAG:-latest}
+    image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-energy-service:${IMAGE_TAG:-latest}
     container_name: energy-service
     ports:
       - "8081:8081"
@@ -113,7 +113,7 @@ services:
     build:
       context: ./backend/food-service
       dockerfile: Dockerfile
-      image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-food-service:${IMAGE_TAG:-latest}
+    image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-food-service:${IMAGE_TAG:-latest}
     container_name: food-service
     ports:
       - "8082:8082"
@@ -133,7 +133,7 @@ services:
     build:
       context: ./backend/analytics-service
       dockerfile: Dockerfile
-      image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-analytics-service:${IMAGE_TAG:-latest}
+    image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-analytics-service:${IMAGE_TAG:-latest}
     container_name: analytics-service
     ports:
       - "8083:8083"
@@ -153,7 +153,7 @@ services:
     build:
       context: ./backend/leaderboard-service
       dockerfile: Dockerfile
-      image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-leaderboard-service:${IMAGE_TAG:-latest}
+    image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-leaderboard-service:${IMAGE_TAG:-latest}
     container_name: leaderboard-service
     ports:
       - "8084:8084"
