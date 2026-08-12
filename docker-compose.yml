@@ -1,0 +1,196 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: carbontracker-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Shashi@123
+      MYSQL_DATABASE: carbon_tracker
+    ports:
+      - "3307:3306"
+    networks:
+      - carbon-net
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  service-registry:
+    build:
+      context: ./backend/service-registry
+      dockerfile: Dockerfile
+      image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-service-registry:${IMAGE_TAG:-latest}
+    container_name: service-registry
+    ports:
+      - "8761:8761"
+    networks:
+      - carbon-net
+    depends_on:
+      - mysql
+    environment:
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=false
+      - EUREKA_CLIENT_FETCH_REGISTRY=false
+      - EUREKA_INSTANCE_HOSTNAME=service-registry
+
+  api-gateway:
+    build:
+      context: ./backend/api-gateway
+      dockerfile: Dockerfile
+      image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-api-gateway:${IMAGE_TAG:-latest}
+    container_name: api-gateway
+    ports:
+      - "8961:8961"
+    networks:
+      - carbon-net
+    depends_on:
+      - service-registry
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_HOSTNAME=api-gateway
+      - SPRING_PROFILES_ACTIVE=prod
+
+  auth-service:
+    build:
+      context: ./backend/auth-service
+      dockerfile: Dockerfile
+      image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-auth-service:${IMAGE_TAG:-latest}
+    container_name: auth-service
+    ports:
+      - "8861:8861"
+    networks:
+      - carbon-net
+    depends_on:
+      - service-registry
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/carbon_tracker?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Shashi@123
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_HOSTNAME=auth-service
+
+  transport-service:
+    build:
+      context: ./backend/transport-service
+      dockerfile: Dockerfile
+      image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-transport-service:${IMAGE_TAG:-latest}
+    container_name: transport-service
+    ports:
+      - "8080:8080"
+    networks:
+      - carbon-net
+    depends_on:
+      - service-registry
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/carbon_tracker?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Shashi@123
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_HOSTNAME=transport-service
+
+  energy-service:
+    build:
+      context: ./backend/energy-service
+      dockerfile: Dockerfile
+      image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-energy-service:${IMAGE_TAG:-latest}
+    container_name: energy-service
+    ports:
+      - "8081:8081"
+    networks:
+      - carbon-net
+    depends_on:
+      - service-registry
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/carbon_tracker?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Shashi@123
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_HOSTNAME=energy-service
+
+  food-service:
+    build:
+      context: ./backend/food-service
+      dockerfile: Dockerfile
+      image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-food-service:${IMAGE_TAG:-latest}
+    container_name: food-service
+    ports:
+      - "8082:8082"
+    networks:
+      - carbon-net
+    depends_on:
+      - service-registry
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/carbon_tracker?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Shashi@123
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_HOSTNAME=food-service
+
+  analytics-service:
+    build:
+      context: ./backend/analytics-service
+      dockerfile: Dockerfile
+      image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-analytics-service:${IMAGE_TAG:-latest}
+    container_name: analytics-service
+    ports:
+      - "8083:8083"
+    networks:
+      - carbon-net
+    depends_on:
+      - service-registry
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/carbon_tracker?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Shashi@123
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_HOSTNAME=analytics-service
+
+  leaderboard-service:
+    build:
+      context: ./backend/leaderboard-service
+      dockerfile: Dockerfile
+      image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-leaderboard-service:${IMAGE_TAG:-latest}
+    container_name: leaderboard-service
+    ports:
+      - "8084:8084"
+    networks:
+      - carbon-net
+    depends_on:
+      - service-registry
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/carbon_tracker?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Shashi@123
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - EUREKA_INSTANCE_HOSTNAME=leaderboard-service
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Baked into the JS bundle at build time — this must be an address
+        # reachable from the USER'S BROWSER, not the Docker network. The
+        # browser hits localhost:8961 via the api-gateway port mapping
+        # above, so this stays "localhost", never the service name.
+        VITE_GATEWAY_BASE_URL: http://localhost:8961
+    image: ${DOCKERHUB_NAMESPACE:-shashi1900}/carbon-footprint-tracker-frontend:${IMAGE_TAG:-latest}
+    container_name: frontend
+    ports:
+      - "3000:80"
+    networks:
+      - carbon-net
+    depends_on:
+      - api-gateway
+
+networks:
+  carbon-net:
+    driver: bridge
+
+volumes:
+  mysql_data:

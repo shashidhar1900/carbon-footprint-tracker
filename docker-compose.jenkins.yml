@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
+    container_name: jenkins
+    ports:
+      # Host 9090, not 8080 — your transport-service already owns 8080
+      # on the host in docker-compose.yml, so this avoids a port clash.
+      - "9090:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      # Mount the HOST's Docker socket so Jenkins can run docker build/push
+      # commands that affect the host's Docker daemon directly, instead of
+      # needing a nested Docker-in-Docker setup.
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  jenkins_home:

@@ -22,7 +22,7 @@ COPY --from=builder /app/target/*.jar /app/app.jar
 RUN ls -l /app
 
 # Expose the service port used by the application
-EXPOSE 8083
+EXPOSE 8861
 
 # Run the jar
 ENTRYPOINT ["java","-jar","/app/app.jar"]
