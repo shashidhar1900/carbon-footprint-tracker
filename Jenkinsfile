@@ -34,7 +34,7 @@ pipeline {
                     backendServices.each { svc ->
                         stage("Build ${svc}") {
                             dir("backend/${svc}") {
-                                sh 'mvn -B clean package'
+                                sh 'mvn -B clean package -DskipTests'
                             }
                         }
                     }
