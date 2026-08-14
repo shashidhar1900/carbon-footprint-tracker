@@ -5,6 +5,7 @@ pipeline {
         DOCKERHUB_CREDENTIALS = credentials('shashi1900')
         DOCKERHUB_NAMESPACE   = 'shashi1900'
         IMAGE_TAG             = "${env.BUILD_NUMBER}"
+        GATEWAY_BASE_URL      = 'http://34.14.173.231:8961'
     }
 
     stages {
@@ -15,40 +16,6 @@ pipeline {
             }
         }
 
-        stage('Build & Test') {
-            steps {
-                script {
-
-                    def backendServices = [
-                        'service-registry',
-                        'api-gateway',
-                        'auth-service',
-                        'transport-service',
-                        'energy-service',
-                        'food-service',
-                        'analytics-service',
-                        'leaderboard-service'
-                    ]
-
-                    // Build backend services sequentially
-                    backendServices.each { svc ->
-                        stage("Build ${svc}") {
-                            dir("backend/${svc}") {
-                                sh 'mvn -B clean package -DskipTests'
-                            }
-                        }
-                    }
-
-                    // Build frontend
-                    stage('Build frontend') {
-                        dir('frontend') {
-                            sh 'npm ci'
-                            sh 'npm run build'
-                        }
-                    }
-                }
-            }
-        }
 
         stage('Docker Build & Push') {
             steps {
@@ -73,36 +40,53 @@ pipeline {
 
                     allServices.each { svc ->
 
-                        def image =
-                            "${DOCKERHUB_NAMESPACE}/carbon-footprint-tracker-${svc}"
+                        def image = "${DOCKERHUB_NAMESPACE}/carbon-footprint-tracker-${svc}"
 
                         def dockerContext =
                             svc == 'frontend'
                                 ? "./frontend"
                                 : "./backend/${svc}"
 
-                        sh """
-                            docker build \
-                                -t ${image}:${IMAGE_TAG} \
-                                -t ${image}:latest \
-                                ${dockerContext}
+                        if (svc == 'frontend') {
 
-                            docker push ${image}:${IMAGE_TAG}
-                            docker push ${image}:latest
-                        """
+                            sh """
+                                docker buildx build \
+                                    --load \
+                                    --build-arg VITE_GATEWAY_BASE_URL=${GATEWAY_BASE_URL} \
+                                    -t ${image}:${IMAGE_TAG} \
+                                    -t ${image}:latest \
+                                    ${dockerContext}
+
+                                docker push ${image}:${IMAGE_TAG}
+                                docker push ${image}:latest
+                            """
+
+                        } else {
+
+                            sh """
+                                docker buildx build \
+                                    --load \
+                                    -t ${image}:${IMAGE_TAG} \
+                                    -t ${image}:latest \
+                                    ${dockerContext}
+
+                                docker push ${image}:${IMAGE_TAG}
+                                docker push ${image}:latest
+                            """
+                        }
                     }
                 }
             }
         }
 
-        stage('Deploy') {
+        /*stage('Deploy') {
             steps {
                 sh '''
                     docker compose pull
                     docker compose up -d
                 '''
             }
-        }
+        }*/
     }
 
     post {
