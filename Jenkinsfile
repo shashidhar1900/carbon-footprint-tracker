@@ -10,11 +10,11 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
+        /*stage('Checkout') {
             steps {
                 checkout scm
             }
-        }
+        }*/
 
 
         stage('Docker Build & Push') {
