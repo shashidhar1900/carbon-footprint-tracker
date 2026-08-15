@@ -10,11 +10,11 @@ pipeline {
 
     stages {
 
-        /*stage('Checkout') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
-        }*/
+        }
 
 
         stage('Docker Build & Push') {
@@ -79,21 +79,21 @@ pipeline {
             }
         }
 
-        /*stage('Deploy') {
+        stage('Deploy') {
             steps {
                 sh '''
                     docker compose pull
                     docker compose up -d
                 '''
             }
-        }*/
+        }
     }
 
     post {
 
-        /*always {
+        always {
             sh 'docker logout || true'
-        }*/
+        }
 
         success {
             echo 'Pipeline succeeded — images built, pushed and deployed.'
