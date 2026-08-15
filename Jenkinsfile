@@ -81,10 +81,15 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh '''
-                    docker compose pull
-                    docker compose up -d
-                '''
+                sshagent(['gcp-app-server']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no \
+                            shashidharreddy0099@34.14.173.231 \
+                            'cd ~/carbon-footprint-tracker && \
+                            docker compose pull && \
+                            docker compose up -d'
+                    '''
+        }
             }
         }
     }
