@@ -91,9 +91,9 @@ pipeline {
 
     post {
 
-        always {
+        /*always {
             sh 'docker logout || true'
-        }
+        }*/
 
         success {
             echo 'Pipeline succeeded — images built, pushed and deployed.'
