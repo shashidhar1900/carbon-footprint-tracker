@@ -1,3 +1,19 @@
+# Maven / Gradle
+target/
+build/
+
+# IDE
+.idea/
+*.iml
+*.class
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
 # Logs
 logs
 *.log
@@ -22,3 +38,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# environment
+.env
