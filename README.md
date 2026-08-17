@@ -219,6 +219,8 @@ Docker Compose
 8.Application VM pulls the latest images.
 9.Docker Compose starts/updates the application.
 
+![JenkinsBuild](docs/screenshots/JenkinsBuild.png)
+
 
 ## 📸 Screenshots
 
