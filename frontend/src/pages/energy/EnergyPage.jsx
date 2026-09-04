@@ -1,25 +1,35 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api from '../../api/axiosInstance';
-import { getTodayDateString } from '../../utils/date';
-import '../ServicePage.css';
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../../api/axiosInstance";
+import { getTodayDateString } from "../../utils/date";
+import "../ServicePage.css";
 
 const TODAY = getTodayDateString();
 
 const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 export function EnergyPage() {
   const navigate = useNavigate();
-  const username = localStorage.getItem('username');
+  const username = localStorage.getItem("username");
 
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
 
-  const [units, setUnits] = useState('');
+  const [units, setUnits] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
@@ -34,10 +44,10 @@ export function EnergyPage() {
   const fetchHistory = useCallback(async () => {
     setIsHistoryLoading(true);
     try {
-      const response = await api.get('/energy-service/api/energy/history');
-      setHistory(response.data || []);
+      const response = await api.get("/energy-service/api/energy/history");
+      setHistory((response.data || []).sort((a, b) => b.id - a.id));
     } catch (error) {
-      console.error('Failed to load energy history:', error);
+      console.error("Failed to load energy history:", error);
     } finally {
       setIsHistoryLoading(false);
     }
@@ -47,11 +57,11 @@ export function EnergyPage() {
     setIsSummaryLoading(true);
     try {
       const response = await api.get(
-        `/energy-service/api/energy/history/${username}/${year}/${month}`
+        `/energy-service/api/energy/history/${username}/${year}/${month}`,
       );
       setMonthlyTotal(response.data?.totalEnergyCarbonEmission ?? 0);
     } catch (error) {
-      console.error('Failed to load monthly summary:', error);
+      console.error("Failed to load monthly summary:", error);
       setMonthlyTotal(0);
     } finally {
       setIsSummaryLoading(false);
@@ -76,20 +86,20 @@ export function EnergyPage() {
     try {
       const payload = { units: Number(units) };
       if (isUpdate) {
-        await api.put('/energy-service/api/energy/update', payload);
-        setFeedback({ type: 'success', text: 'Today\'s entry updated' });
+        await api.put("/energy-service/api/energy/update", payload);
+        setFeedback({ type: "success", text: "Today's entry updated" });
       } else {
-        await api.post('/energy-service/api/energy/add', payload);
-        setFeedback({ type: 'success', text: 'Entry added' });
+        await api.post("/energy-service/api/energy/add", payload);
+        setFeedback({ type: "success", text: "Entry added" });
       }
-      setUnits('');
+      setUnits("");
       fetchHistory();
       fetchMonthlySummary();
     } catch (error) {
-      console.error('Save failed:', error);
+      console.error("Save failed:", error);
       setFeedback({
-        type: 'error',
-        text: error.response?.data || error.message || 'Something went wrong',
+        type: "error",
+        text: error.response?.data || error.message || "Something went wrong",
       });
     } finally {
       setIsSubmitting(false);
@@ -101,16 +111,16 @@ export function EnergyPage() {
     setFeedback(null);
 
     try {
-      await api.delete('/energy-service/api/energy/delete');
-      setFeedback({ type: 'success', text: "Today's entry deleted" });
+      await api.delete("/energy-service/api/energy/delete");
+      setFeedback({ type: "success", text: "Today's entry deleted" });
       setShowDeleteConfirm(false);
       fetchHistory();
       fetchMonthlySummary();
     } catch (error) {
-      console.error('Delete failed:', error);
+      console.error("Delete failed:", error);
       setFeedback({
-        type: 'error',
-        text: error.response?.data || error.message || 'Delete failed',
+        type: "error",
+        text: error.response?.data || error.message || "Delete failed",
       });
     } finally {
       setIsSubmitting(false);
@@ -125,17 +135,23 @@ export function EnergyPage() {
         <div className="bg-blob bg-blob-2" />
       </div>
 
-      <button type="button" className="back-link" onClick={() => navigate('/dashboard')}>
+      <button
+        type="button"
+        className="back-link"
+        onClick={() => navigate("/dashboard")}
+      >
         ← Dashboard
       </button>
 
       <h1>Energy</h1>
 
-      {feedback && <p className={`service-message ${feedback.type}`}>{feedback.text}</p>}
+      {feedback && (
+        <p className={`service-message ${feedback.type}`}>{feedback.text}</p>
+      )}
 
       <section className="service-card">
         <p className="service-card-title">
-          {todayEntry ? "Update today's energy usage" : 'Log energy usage'}
+          {todayEntry ? "Update today's energy usage" : "Log energy usage"}
         </p>
         <form className="service-form">
           <div>
@@ -188,18 +204,30 @@ export function EnergyPage() {
       <section className="service-card">
         <p className="service-card-title">Monthly summary</p>
         <div className="service-summary-row">
-          <select value={month} onChange={(e) => setMonth(Number(e.target.value))}>
+          <select
+            value={month}
+            onChange={(e) => setMonth(Number(e.target.value))}
+          >
             {MONTHS.map((label, index) => (
-              <option key={label} value={index + 1}>{label}</option>
+              <option key={label} value={index + 1}>
+                {label}
+              </option>
             ))}
           </select>
-          <select value={year} onChange={(e) => setYear(Number(e.target.value))}>
+          <select
+            value={year}
+            onChange={(e) => setYear(Number(e.target.value))}
+          >
             {[year, year - 1, year - 2].map((y) => (
-              <option key={y} value={y}>{y}</option>
+              <option key={y} value={y}>
+                {y}
+              </option>
             ))}
           </select>
           <div className="summary-total">
-            {isSummaryLoading ? 'Loading...' : `${(monthlyTotal ?? 0).toFixed(1)} kg CO2`}
+            {isSummaryLoading
+              ? "Loading..."
+              : `${(monthlyTotal ?? 0).toFixed(1)} kg CO2`}
           </div>
         </div>
       </section>
@@ -211,22 +239,24 @@ export function EnergyPage() {
         ) : history.length === 0 ? (
           <p className="service-empty">No entries yet.</p>
         ) : (
-          <table className="service-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Units</th>
-              </tr>
-            </thead>
-            <tbody>
-              {history.map((row) => (
-                <tr key={row.id}>
-                  <td>{row.date}</td>
-                  <td>{row.units} kWh</td>
+          <div className="service-table-scroll">
+            <table className="service-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Units</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {history.map((row) => (
+                  <tr key={row.id}>
+                    <td>{row.date}</td>
+                    <td>{row.units} kWh</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
 
@@ -234,12 +264,24 @@ export function EnergyPage() {
         <div className="modal-overlay" role="dialog" aria-modal="true">
           <div className="modal-card">
             <h2>Delete today&apos;s entry?</h2>
-            <p>This removes today&apos;s energy record. This can&apos;t be undone.</p>
+            <p>
+              This removes today&apos;s energy record. This can&apos;t be
+              undone.
+            </p>
             <div className="modal-actions">
-              <button type="button" className="danger-button" disabled={isSubmitting} onClick={handleDeleteConfirmed}>
-                {isSubmitting ? 'Deleting...' : 'Delete'}
+              <button
+                type="button"
+                className="danger-button"
+                disabled={isSubmitting}
+                onClick={handleDeleteConfirmed}
+              >
+                {isSubmitting ? "Deleting..." : "Delete"}
               </button>
-              <button type="button" onClick={() => setShowDeleteConfirm(false)} disabled={isSubmitting}>
+              <button
+                type="button"
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isSubmitting}
+              >
                 Cancel
               </button>
             </div>

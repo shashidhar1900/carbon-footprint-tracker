@@ -20,18 +20,33 @@ export function LeaderboardPage() {
     setIsLoading(true);
     setFeedback(null);
     try {
-      const path = view === 'top'
-        ? `/leaderboard-service/api/leaderboard/monthly/top/${count}`
-        : `/leaderboard-service/api/leaderboard/monthly/last/${count}`;
+      const path =
+        view === 'top'
+          ? `/leaderboard-service/api/leaderboard/monthly/top/${count}`
+          : `/leaderboard-service/api/leaderboard/monthly/last/${count}`;
       const response = await api.get(path);
-      setEntries(response.data || []);
+      const leaderboardEntries = response.data || [];
+
+      // Fetch user rank and append it to the leaderboard
+      if (username) {
+        const userRankResponse = await api.get(`/leaderboard-service/api/leaderboard/monthly/rank/${username}`);
+        const userRank = userRankResponse.data;
+
+        // Check if the user's rank is already in the list
+        const isUserInList = leaderboardEntries.some((entry) => entry.username === username);
+        if (!isUserInList) {
+          leaderboardEntries.push(userRank);
+        }
+      }
+
+      setEntries(leaderboardEntries);
     } catch (error) {
       console.error('Failed to load leaderboard:', error);
       setFeedback({ type: 'error', text: 'Unable to load leaderboard' });
     } finally {
       setIsLoading(false);
     }
-  }, [view, count]);
+  }, [view, count, username]);
 
   useEffect(() => {
     fetchLeaderboard();
@@ -61,7 +76,9 @@ export function LeaderboardPage() {
           </select>
           <select value={count} onChange={(e) => setCount(Number(e.target.value))}>
             {COUNT_OPTIONS.map((n) => (
-              <option key={n} value={n}>Top {n}</option>
+              <option key={n} value={n}>
+                Top {n}
+              </option>
             ))}
           </select>
         </div>
@@ -80,13 +97,16 @@ export function LeaderboardPage() {
               </tr>
             </thead>
             <tbody>
-              {entries.map((entry, index) => (
+              {entries.map((entry) => (
                 <tr
                   key={entry.username}
                   className={entry.username === username ? 'row-highlight' : ''}
                 >
-                  <td>{index + 1}</td>
-                  <td>{entry.username}{entry.username === username ? ' (you)' : ''}</td>
+                  <td>{entry.rank}</td> {/* Use the actual rank from the entry object */}
+                  <td>
+                    {entry.username}
+                    {entry.username === username ? ' (you)' : ''}
+                  </td>
                   <td style={{ textAlign: 'right' }}>{entry.totalEmission?.toFixed(1)} kg</td>
                 </tr>
               ))}

@@ -28,4 +28,9 @@ public class LeaderBoardController {
     public ResponseEntity<List<LeaderBoard>> getGlobalLastLeaderboard(@PathVariable int last) {
         return leaderBoardService.getLastPerformers(last);
     }
+
+    @GetMapping("monthly/rank/{username}")
+    public ResponseEntity<LeaderBoard> getUSerRank(@PathVariable String username) {
+        return leaderBoardService.getUserRank(username);
+    }
 }
